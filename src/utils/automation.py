@@ -1,6 +1,22 @@
 from time import time, sleep
-from typing import overload, Literal, Optional, Callable, Any, cast, Union, Generator, List, TypeVar, NewType, TypeAlias, Type
+from typing import (
+    overload,
+    Literal,
+    Optional,
+    Callable,
+    Any,
+    cast,
+    Union,
+    Generator,
+    List,
+    TypeVar,
+    NewType,
+    TypeAlias,
+    Type,
+    Dict,
+)
 
+from _ctypes import COMError
 from pywinauto import WindowSpecification, Application
 from pywinauto.controls.uia_controls import ButtonWrapper, EditWrapper, ListViewWrapper, ListItemWrapper
 from pywinauto.controls.uiawrapper import UIAWrapper
@@ -207,3 +223,40 @@ def get_full_text(element: UiaElement) -> str:
             txt += " " + child_text
 
     return txt.strip()
+
+
+def print_element_tree(
+    element: UiaElement, max_depth: Optional[int] = None, counters: Optional[Dict[str, int]] = None, depth: int = 0
+) -> None:
+    """
+    :param element: UiaElement - Root element of the tree
+    :param max_depth: Optional[int} = None - Max depth of the tree to print
+    :param counters: Optional[Dict[str, int]] = None - Index count (**IMPORTANT! don't use directly**). Not accurate when max_depth is set
+    :param depth: Optional[int] = 0 - Current depth of the tree (**IMPORTANT! don't use directly**)
+    :return: None
+    """
+
+    if max_depth is not None:
+        if not isinstance(max_depth, int) or max_depth < 0:
+            raise ValueError("max_depth must be a non-negative integer or None")
+
+    if counters is None:
+        counters = {}
+
+    element_ctrl = element.friendly_class_name()
+    counters[element_ctrl] = counters.get(element_ctrl, 0) + 1
+    element_idx = counters[element_ctrl] - 1
+
+    element_repr = "▏   " * (depth + 1) + f"{element_ctrl}{element_idx} - {text(element)!r} - "
+
+    try:
+        element_repr += f"{element.rectangle()}"
+        print(element_repr)
+    except COMError:
+        element_repr += "(COMError)"
+        print(element_repr)
+        return
+
+    if max_depth is None or depth < max_depth:
+        for child in iter_children(element):
+            print_element_tree(child, max_depth, counters, depth + 1)
