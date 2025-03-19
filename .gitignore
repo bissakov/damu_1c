@@ -9,6 +9,7 @@ backups/
 logs/
 temp/
 downloads/
+resources/
 
 *.zip
 .env
