@@ -15,3 +15,5 @@ resources/
 .env
 .env.*
 *.v8i
+foo.py
+*.sel
