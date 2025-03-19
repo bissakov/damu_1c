@@ -8,8 +8,10 @@ wheelhouse/
 backups/
 logs/
 temp/
+downloads/
+resources/
 
 *.zip
 .env
 .env.*
-.v8i
+*.v8i
