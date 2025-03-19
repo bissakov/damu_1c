@@ -1,0 +1,15 @@
+venv/
+.venv/
+__pycache__
+chrome-win64/
+data/
+wheelhouse/
+.idea/
+backups/
+logs/
+temp/
+
+*.zip
+.env
+.env.*
+.v8i
